@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evan Wormhole</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <a href="queue.html" class="logo-button" aria-label="Get in the queue for a sticker">
+            <img src="logo.png" alt="Evan Wormhole Logo" class="logo">
+        </a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="music.html">Music</a></li>
+                <li><a href="shows.html">Shows</a></li>
+                <li><a href="updates.html">Updates</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h2>Latest Single Out Now !</h2>
+            <p>Listen to Dashcam Footage on all streaming platforms .</p>
+            <a href="https://distrokid.com/hyperfollow/evanwormhole/dashcam-footage?ref=release" target="_blank" class="listen-button">Listen Now</a>
+        </section>
+
+        <section class="latest-music">
+            <h3>Coming soon , Stay Tuned :</h3>
+            <div id="app" class="webamp-player" style="height: 500px;"></div>
+            <p>Invisible Thumbs , Featuring Sam 'The Band' Cundy of No Further Services ,
+                coming June 19th to all streaming platfomrs . Preview the song here and see if you can mix it better than i can !
+            </p>
+        </section>
+
+        <section class="about-section">
+            <div class="about-content">
+                <h3>About Evan Wormhole</h3>
+                <p>One year ago , Evan Wormhole bought Logic Pro on an impulse using a buy-now-pay-later scheme , and created
+                    their first demo 'really don't love' in the 12 hours following . In the 12 months since that moment , Evan has been working with great passion
+                    to experiment with and harness the possibilities of music production to create boundless vessels to bear songs of anxious futures , tumultuous memories ,
+                    and their quest for a fun , funky , fulfilling lifestyle in the present . When they're not singing of their own afflictions , Evan often embodies the thoughts of a 
+                    generation who's voices are lost on those in charge , and holds hope and cautious optimism close to their heart .
+                </p>
+            </div>
+        </section>
+
+        <section class="draw-section">
+            <h3>Design My Merch !</h3>
+            <p>Use the square canvas below , then submit your artwork .</p>
+            <form id="drawing-form" action="mailto:your-email@example.com" method="post" enctype="text/plain">
+                <div class="canvas-wrapper">
+                    <canvas id="drawing-canvas" width="320" height="320"></canvas>
+                </div>
+                <div class="canvas-controls">
+                    <button type="button" id="clear-canvas">Clear</button>
+                    <button type="button" id="fill-canvas">Fill Canvas</button>
+                    <label for="tool-select">Tool:</label>
+                    <select id="tool-select" name="tool">
+                        <option value="brush" selected>Brush</option>
+                        <option value="eraser">Eraser</option>
+                    </select>
+                    <label for="brush-size">Size:</label>
+                    <select id="brush-size" name="brushSize">
+                        <option value="4">Small</option>
+                        <option value="8" selected>Medium</option>
+                        <option value="14">Large</option>
+                    </select>
+                    <label for="brush-color">Color:</label>
+                    <input type="color" id="brush-color" name="brushColor" value="#000000">
+                </div>
+                <input type="hidden" id="drawing-data" name="drawingData">
+                <label for="drawing-message">Message:</label>
+                <textarea id="drawing-message" name="message" rows="3" placeholder="Tell me about your drawing..."></textarea>
+                <button type="submit">Submit Drawing</button>
+            </form>
+        </section>
+
+        <section class="mailing-list">
+            <div class="mailing-list-content">
+                <h3>Enter The Wormhole !</h3>
+                <p>Sign up to recieve special updates from Evan Wormhole :</p>
+                <a href="https://sibforms.com/serve/MUIFAIxF8KPmZmKKR96ALkhi572NjLEch_c7xn7zZmMHVB_XyDD49KOeufwWH1m5t-nhaKV1E_2-ndhCYnZiHQMoswdqU308IpOjMBH5uX0M574dRzmHC24GQGrFDkqnPt9IlgDcDBrO-1q4801CsmsJByCdQDmmQSsbDIUXeuYPXe5SslCURHMaR-ZSLr5XxdmOGYCr7HLJA8J9" class="mailing-button">mailing list</a>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/webamp@1.4.2/built/webamp.bundle.min.js"></script>
+    <script>
+        const webamp = new Webamp({
+            initialTracks: [
+                {
+                    metaData: { artist: "Evan Wormhole", title: "Invisible Thumbs (Feat. No Further Services)" },
+                    url: "Invisible Thumbs Final Master New Version.wav",
+                    coverArtUrl: "Invisible Thumbs.jpg",
+                },
+            ],
+        });
+        webamp.renderWhenReady(document.getElementById('app'));
+
+        const canvas = document.getElementById('drawing-canvas');
+        const ctx = canvas.getContext('2d');
+        const brushSizeControl = document.getElementById('brush-size');
+        const brushColorControl = document.getElementById('brush-color');
+        const toolSelect = document.getElementById('tool-select');
+        const clearButton = document.getElementById('clear-canvas');
+        const fillButton = document.getElementById('fill-canvas');
+        const drawingForm = document.getElementById('drawing-form');
+        const drawingDataInput = document.getElementById('drawing-data');
+
+        let drawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        function setCanvasDefaults() {
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = Number(brushSizeControl.value);
+            ctx.strokeStyle = brushColorControl.value;
+        }
+
+        function drawLine(x, y) {
+            if (toolSelect.value === 'eraser') {
+                ctx.strokeStyle = '#fff';
+            } else {
+                ctx.strokeStyle = brushColorControl.value;
+            }
+            ctx.lineWidth = Number(brushSizeControl.value);
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            lastX = x;
+            lastY = y;
+        }
+
+        function getCanvasCoords(event) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: event.clientX - rect.left,
+                y: event.clientY - rect.top,
+            };
+        }
+
+        canvas.addEventListener('pointerdown', (event) => {
+            drawing = true;
+            const coords = getCanvasCoords(event);
+            lastX = coords.x;
+            lastY = coords.y;
+            canvas.setPointerCapture(event.pointerId);
+        });
+
+        canvas.addEventListener('pointermove', (event) => {
+            if (!drawing) return;
+            const coords = getCanvasCoords(event);
+            drawLine(coords.x, coords.y);
+        });
+
+        canvas.addEventListener('pointerup', (event) => {
+            drawing = false;
+            canvas.releasePointerCapture(event.pointerId);
+        });
+
+        canvas.addEventListener('pointerleave', () => drawing = false);
+
+        clearButton.addEventListener('click', () => {
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        });
+
+        fillButton.addEventListener('click', () => {
+            ctx.fillStyle = brushColorControl.value;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        });
+
+        drawingForm.addEventListener('submit', (event) => {
+            drawingDataInput.value = canvas.toDataURL('image/png');
+        });
+
+        setCanvasDefaults();
+        brushSizeControl.addEventListener('change', () => {
+            ctx.lineWidth = Number(brushSizeControl.value);
+        });
+        brushColorControl.addEventListener('change', () => {
+            if (toolSelect.value !== 'eraser') {
+                ctx.strokeStyle = brushColorControl.value;
+            }
+        });
+    </script>
+
+    <footer>
+        <p>&copy; 2026 Wormhole Industries . All rights reserved .</p>
+    </footer>
+</body>
+</html>
