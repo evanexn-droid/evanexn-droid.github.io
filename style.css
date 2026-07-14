@@ -1,5 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
 
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
 /* General body styles */
 body, button, input, textarea, select, a, label {
     cursor: url('Final Mask Cursor-32.png') 0 0, auto;
@@ -21,6 +29,13 @@ body {
     background: url('Final main background image.jpeg') center/cover fixed no-repeat;
     color: #fff;
     text-shadow: 0 0 2px #000, 0 0 6px #000;
+    overflow-x: hidden;
+    font-size: 16px;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
 }
 
 input[type="text"],
@@ -514,13 +529,168 @@ section address {
     box-shadow: 0 12px 28px rgba(0,0,0,0.18);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 760px) {
+    header {
+        padding: 1rem 0.75rem 1.4rem;
+        background-attachment: scroll;
+    }
+
+    header .logo {
+        max-width: 140px;
+        transform: none;
+    }
+
+    header .logo-button,
+    header .logo-button:hover,
+    header .logo-button:hover .logo {
+        transform: none;
+    }
+
+    nav ul {
+        flex-wrap: wrap;
+        gap: 0.4rem 0.75rem;
+    }
+
+    nav ul li {
+        margin: 0;
+    }
+
+    nav ul li a {
+        transform: none;
+        padding: 0.3rem 0.1rem;
+        font-size: 0.95rem;
+    }
+
+    main {
+        padding: 14px;
+    }
+
+    section {
+        padding: 18px 14px;
+        margin-bottom: 14px;
+    }
+
+    .hero,
+    .contact-hero,
+    .updates-hero,
+    .shows-hero,
+    .music-hero,
+    .sticker-hero,
+    .latest-music,
+    .draw-section,
+    .mailing-list,
+    .about-section,
+    .updates-feed {
+        padding: 28px 18px;
+        border-radius: 14px;
+    }
+
+    .contact-hero,
+    .music-hero {
+        padding: 60px 18px;
+    }
+
     .release-grid-section {
-        padding: 28px 16px 40px;
+        padding: 28px 12px 40px;
+    }
+
+    .release-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     .release-card {
         aspect-ratio: auto;
+        min-height: auto;
+    }
+
+    .release-card-content {
+        padding: 24px 18px;
+    }
+
+    .canvas-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .canvas-controls > * {
+        width: 100%;
+    }
+
+    .draw-section button,
+    .draw-section button[type="submit"],
+    .draw-section button[type="button"],
+    .shows-hero button,
+    .hero button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .shows-hero form {
+        gap: 12px;
+    }
+
+    .webamp-player {
+        height: 320px !important;
+    }
+
+    footer {
+        padding: 1.3rem 1rem;
+        min-height: auto;
+        background-attachment: scroll;
+    }
+}
+
+@media (max-width: 640px) {
+    body {
+        font-size: 15px;
+        line-height: 1.55;
+    }
+
+    header {
+        padding: 0.9rem 0.7rem 1.2rem;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+    .hero,
+    .contact-hero,
+    .updates-hero,
+    .shows-hero,
+    .music-hero,
+    .sticker-hero,
+    .latest-music,
+    .draw-section,
+    .mailing-list,
+    .about-section,
+    .updates-feed {
+        padding: 24px 14px;
+    }
+
+    .release-grid-section {
+        padding: 24px 10px 32px;
+    }
+
+    .release-card-content h3 {
+        font-size: 1.2rem;
+    }
+
+    .stream-button,
+    .listen-button,
+    .mailing-button {
+        width: 100%;
+    }
+
+    #drawing-canvas {
+        max-width: 100%;
+    }
+
+    .updates-feed p,
+    .about-section p,
+    .mailing-list p {
+        font-size: 0.96rem;
     }
 }
 
