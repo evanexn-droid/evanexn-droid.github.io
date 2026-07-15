@@ -182,7 +182,9 @@
 
         drawingForm.addEventListener('submit', (event) => {
             event.preventDefault();
-            drawingDataInput.value = canvas.toDataURL('image/png');
+            // Export the canvas as a JPEG to produce a standard image file
+            // and avoid raw numeric data being stored.
+            drawingDataInput.value = canvas.toDataURL('image/jpeg', 0.92);
 
             const merchSubmission = {
                 id: `merch-${Date.now()}`,
