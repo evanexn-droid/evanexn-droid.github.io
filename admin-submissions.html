@@ -12,6 +12,10 @@
         .submission-card h4 { margin: 0 0 0.5rem; }
         .submission-card img { max-width: 100%; height: auto; display: block; margin-top: 0.5rem; }
         .admin-actions { margin-bottom: 1rem; }
+        .submission-section { border: 1px solid #ddd; border-radius: 0.5rem; margin-bottom: 1rem; overflow: hidden; background: rgba(255,255,255,0.8); }
+        .submission-section summary { cursor: pointer; padding: 1rem; font-weight: 600; list-style: none; }
+        .submission-section summary::-webkit-details-marker { display: none; }
+        .submission-section-content { padding: 0 1rem 1rem; }
     </style>
 </head>
 <body>
@@ -33,7 +37,7 @@
     <main>
         <section class="hero shows-hero">
             <h2>Admin Submissions</h2>
-            <p>This page is password-protected and displays saved merch and show submissions.</p>
+            <p>This page is password-protected and displays saved merch, show, and sticker queue submissions.</p>
             <div id="login-panel" class="admin-actions">
                 <label for="admin-password">Admin Password:</label>
                 <input id="admin-password" type="password" placeholder="Enter password">
@@ -75,35 +79,75 @@
                 return;
             }
 
-            items.slice().reverse().forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'submission-card';
+            const groupedItems = {
+                merch: items.filter(item => item.type === 'merch'),
+                sticker: items.filter(item => item.type === 'sticker'),
+                show: items.filter(item => item.type !== 'merch' && item.type !== 'sticker')
+            };
 
-                const title = document.createElement('h4');
-                title.textContent = item.type === 'merch' ? 'Merch Design Submission' : 'Show Suggestion';
-                card.appendChild(title);
+            const sections = [
+                { key: 'merch', title: 'Merch Design Submissions', items: groupedItems.merch },
+                { key: 'sticker', title: 'Sticker Queue Submissions', items: groupedItems.sticker },
+                { key: 'show', title: 'Show Suggestions', items: groupedItems.show }
+            ];
 
-                const meta = document.createElement('p');
-                meta.textContent = `Submitted: ${new Date(item.timestamp).toLocaleString()}`;
-                card.appendChild(meta);
+            sections.forEach(section => {
+                const details = document.createElement('details');
+                details.className = 'submission-section';
+                details.open = section.items.length > 0;
 
-                if (item.type === 'merch') {
-                    card.appendChild(document.createElement('p')).textContent = `Tool: ${item.tool}`;
-                    card.appendChild(document.createElement('p')).textContent = `Brush Size: ${item.brushSize}`;
-                    card.appendChild(document.createElement('p')).textContent = `Brush Color: ${item.brushColor}`;
-                    if (item.message) {
-                        card.appendChild(document.createElement('p')).textContent = `Message: ${item.message}`;
-                    }
-                    const img = document.createElement('img');
-                    img.src = item.drawingData;
-                    img.alt = 'Saved merch drawing';
-                    card.appendChild(img);
+                const summary = document.createElement('summary');
+                summary.textContent = `${section.title} (${section.items.length})`;
+                details.appendChild(summary);
+
+                const content = document.createElement('div');
+                content.className = 'submission-section-content';
+
+                if (!section.items.length) {
+                    const emptyState = document.createElement('p');
+                    emptyState.textContent = 'No submissions in this category yet.';
+                    content.appendChild(emptyState);
                 } else {
-                    card.appendChild(document.createElement('p')).textContent = `Venue: ${item.venue}`;
-                    card.appendChild(document.createElement('p')).textContent = `Location: ${item.location}`;
+                    section.items.slice().reverse().forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'submission-card';
+
+                        const title = document.createElement('h4');
+                        title.textContent = item.type === 'merch'
+                            ? 'Merch Design Submission'
+                            : item.type === 'sticker'
+                                ? 'Sticker Queue Submission'
+                                : 'Show Suggestion';
+                        card.appendChild(title);
+
+                        const meta = document.createElement('p');
+                        meta.textContent = `Submitted: ${new Date(item.timestamp).toLocaleString()}`;
+                        card.appendChild(meta);
+
+                        if (item.type === 'merch') {
+                            card.appendChild(document.createElement('p')).textContent = `Tool: ${item.tool}`;
+                            card.appendChild(document.createElement('p')).textContent = `Brush Size: ${item.brushSize}`;
+                            card.appendChild(document.createElement('p')).textContent = `Brush Color: ${item.brushColor}`;
+                            if (item.message) {
+                                card.appendChild(document.createElement('p')).textContent = `Message: ${item.message}`;
+                            }
+                            const img = document.createElement('img');
+                            img.src = item.drawingData;
+                            img.alt = 'Saved merch drawing';
+                            card.appendChild(img);
+                        } else if (item.type === 'sticker') {
+                            card.appendChild(document.createElement('p')).textContent = `Email: ${item.email}`;
+                        } else {
+                            card.appendChild(document.createElement('p')).textContent = `Venue: ${item.venue}`;
+                            card.appendChild(document.createElement('p')).textContent = `Location: ${item.location}`;
+                        }
+
+                        content.appendChild(card);
+                    });
                 }
 
-                submissionsList.appendChild(card);
+                details.appendChild(content);
+                submissionsList.appendChild(details);
             });
         }
 

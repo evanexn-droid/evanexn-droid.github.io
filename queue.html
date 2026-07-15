@@ -27,10 +27,11 @@
         <section class="hero sticker-hero">
             <h2>Get in the queue for a sticker</h2>
             <p>Fancy a sticker from Evan Wormhole ? Submit your email below and we’ll reach out once we've got one for you :</p>
-            <form action="mailto:your-email@example.com" method="post" enctype="text/plain">
+            <form>
                 <label for="sticker-email">Email address</label>
                 <input type="email" id="sticker-email" name="email" required placeholder="you@example.com">
                 <button type="submit">Submit Email</button>
+                <p id="submission-status" style="display:none; margin-top: 0.75rem;"></p>
             </form>
         </section>
     </main>
@@ -38,5 +39,36 @@
     <footer>
         <p>&copy; 2026 Evan Wormhole. All rights reserved.</p>
     </footer>
+
+    <script>
+        const stickerForm = document.querySelector('.sticker-hero form');
+        const stickerEmailInput = document.getElementById('sticker-email');
+        const submissionStatus = document.getElementById('submission-status');
+
+        stickerForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const email = stickerEmailInput.value.trim();
+
+            if (!email) {
+                submissionStatus.textContent = 'Please enter a valid email address.';
+                submissionStatus.style.display = 'block';
+                return;
+            }
+
+            const submission = {
+                type: 'sticker',
+                email,
+                timestamp: new Date().toISOString()
+            };
+
+            const stored = JSON.parse(localStorage.getItem('adminSubmissions') || '[]');
+            stored.push(submission);
+            localStorage.setItem('adminSubmissions', JSON.stringify(stored));
+
+            stickerForm.reset();
+            submissionStatus.textContent = 'Thanks! Your sticker queue submission has been saved.';
+            submissionStatus.style.display = 'block';
+        });
+    </script>
 </body>
 </html>
