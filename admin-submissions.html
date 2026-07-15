@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Submissions</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { padding: 2rem; }
+        .hidden { display: none; }
+        .submission-card { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; border-radius: 0.5rem; }
+        .submission-card h4 { margin: 0 0 0.5rem; }
+        .submission-card img { max-width: 100%; height: auto; display: block; margin-top: 0.5rem; }
+        .admin-actions { margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo-button" aria-label="Home">
+            <img src="logo.png" alt="Evan Wormhole Logo" class="logo">
+        </a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="music.html">Music</a></li>
+                <li><a href="shows.html">Shows</a></li>
+                <li><a href="updates.html">Updates</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero shows-hero">
+            <h2>Admin Submissions</h2>
+            <p>This page is password-protected and displays saved merch and show submissions.</p>
+            <div id="login-panel" class="admin-actions">
+                <label for="admin-password">Admin Password:</label>
+                <input id="admin-password" type="password" placeholder="Enter password">
+                <button id="admin-login" type="button">Unlock</button>
+                <p id="login-error" style="color:red; display:none;">Invalid password.</p>
+            </div>
+            <div id="submissions-panel" class="hidden">
+                <button id="clear-submissions" type="button">Clear All Saved Submissions</button>
+                <div id="submissions-list"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Evan Wormhole. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const LOGIN_HASH = '7bea9e8534528ebe9d3db1a8bbf1231bb8c62749f4ade80d8d22a4712af126c9';
+        const loginPanel = document.getElementById('login-panel');
+        const submissionsPanel = document.getElementById('submissions-panel');
+        const loginError = document.getElementById('login-error');
+        const passwordInput = document.getElementById('admin-password');
+        const loginButton = document.getElementById('admin-login');
+        const submissionsList = document.getElementById('submissions-list');
+        const clearButton = document.getElementById('clear-submissions');
+
+        async function hashText(text) {
+            const data = new TextEncoder().encode(text);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+
+        function renderSubmissions(items) {
+            submissionsList.innerHTML = '';
+            if (!items.length) {
+                submissionsList.innerHTML = '<p>No saved submissions yet.</p>';
+                return;
+            }
+
+            items.slice().reverse().forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'submission-card';
+
+                const title = document.createElement('h4');
+                title.textContent = item.type === 'merch' ? 'Merch Design Submission' : 'Show Suggestion';
+                card.appendChild(title);
+
+                const meta = document.createElement('p');
+                meta.textContent = `Submitted: ${new Date(item.timestamp).toLocaleString()}`;
+                card.appendChild(meta);
+
+                if (item.type === 'merch') {
+                    card.appendChild(document.createElement('p')).textContent = `Tool: ${item.tool}`;
+                    card.appendChild(document.createElement('p')).textContent = `Brush Size: ${item.brushSize}`;
+                    card.appendChild(document.createElement('p')).textContent = `Brush Color: ${item.brushColor}`;
+                    if (item.message) {
+                        card.appendChild(document.createElement('p')).textContent = `Message: ${item.message}`;
+                    }
+                    const img = document.createElement('img');
+                    img.src = item.drawingData;
+                    img.alt = 'Saved merch drawing';
+                    card.appendChild(img);
+                } else {
+                    card.appendChild(document.createElement('p')).textContent = `Venue: ${item.venue}`;
+                    card.appendChild(document.createElement('p')).textContent = `Location: ${item.location}`;
+                }
+
+                submissionsList.appendChild(card);
+            });
+        }
+
+        function loadSubmissions() {
+            return JSON.parse(localStorage.getItem('adminSubmissions') || '[]');
+        }
+
+        loginButton.addEventListener('click', async () => {
+            const entered = passwordInput.value;
+            const enteredHash = await hashText(entered);
+            if (enteredHash === LOGIN_HASH) {
+                loginPanel.classList.add('hidden');
+                submissionsPanel.classList.remove('hidden');
+                loginError.style.display = 'none';
+                renderSubmissions(loadSubmissions());
+            } else {
+                loginError.style.display = 'block';
+            }
+        });
+
+        clearButton.addEventListener('click', () => {
+            localStorage.removeItem('adminSubmissions');
+            renderSubmissions([]);
+        });
+    </script>
+</body>
+</html>

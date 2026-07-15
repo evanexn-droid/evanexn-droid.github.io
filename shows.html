@@ -27,7 +27,7 @@
         <section class="hero shows-hero">
             <h2>Shows</h2>
             <p>If you wanna witness the Wormhole in a city near you , let me know a cool venue where I can come !</p>
-            <form action="mailto:your-email@example.com" method="post" enctype="text/plain">
+            <form id="shows-form" action="#" method="POST">
                 <label for="venue">Venue:</label>
                 <input type="text" id="venue" name="venue" required>
                 <label for="location">Location:</label>
@@ -124,6 +124,27 @@
             </form>
         </section>
     </main>
+
+    <script>
+        const showsForm = document.getElementById('shows-form');
+        showsForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const submission = {
+                id: `shows-${Date.now()}`,
+                type: 'show',
+                timestamp: new Date().toISOString(),
+                venue: document.getElementById('venue').value.trim(),
+                location: document.getElementById('location').value,
+            };
+
+            const stored = JSON.parse(localStorage.getItem('adminSubmissions') || '[]');
+            stored.push(submission);
+            localStorage.setItem('adminSubmissions', JSON.stringify(stored));
+
+            alert('Show suggestion saved to the secure admin submissions page.');
+            showsForm.reset();
+        });
+    </script>
 
     <footer>
         <p>&copy; 2026 Evan Wormhole. All rights reserved.</p>
