@@ -741,31 +741,76 @@ section address {
 }
 
 .latest-music {
-    padding: 40px;
-    border-radius: 12px;
-    background: url('Invisible Thumbs.jpg') center bottom/cover no-repeat;
+    padding: 56px 32px;
+    border-radius: 16px;
+    background: url('Invisible Thumbs.jpg') center center/cover no-repeat;
     color: #fff;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 15px 40px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-height: 760px;
 }
 
 .latest-music h3,
 .latest-music p,
 .latest-music h4 {
     color: #fff;
+    margin: 0;
+    max-width: 760px;
+    text-align: center;
 }
 
-.latest-music {
-    padding: 40px;
-    border-radius: 12px;
-    background: url('Invisible Thumbs.jpg') center bottom/cover no-repeat;
+.mixtape-section {
+    position: relative;
+    text-align: center;
+    margin: 20px 0;
+    padding: 72px 24px;
+    border-radius: 20px;
+    background: url('Final main background image.jpeg') center/cover no-repeat;
+    background-size: cover;
     color: #fff;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 15px 40px rgba(0,0,0,0.2);
+    overflow: hidden;
+    min-height: 760px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 15px 40px rgba(0,0,0,0.2);
 }
 
-.latest-music h3,
-.latest-music p,
-.latest-music h4 {
+.mixtape-content {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+}
+
+.mixtape-section h3 {
+    margin: 0;
     color: #fff;
+    font-size: 1.6rem;
+    line-height: 1.4;
+}
+
+.webamp-player {
+    width: min(100%, 920px);
+    margin: 0 auto;
+    padding: 16px;
+    border-radius: 18px;
+    background: transparent;
+    box-shadow: none;
+    overflow: hidden;
+    min-height: 560px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.webamp-player > * {
+    width: 100% !important;
+    max-width: 100%;
+    display: block;
 }
 
 .draw-section {
