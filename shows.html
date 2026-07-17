@@ -127,22 +127,30 @@
 
     <script>
         const showsForm = document.getElementById('shows-form');
-        showsForm.addEventListener('submit', (event) => {
+        showsForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             const submission = {
-                id: `shows-${Date.now()}`,
                 type: 'show',
-                timestamp: new Date().toISOString(),
                 venue: document.getElementById('venue').value.trim(),
                 location: document.getElementById('location').value,
             };
 
-            const stored = JSON.parse(localStorage.getItem('adminSubmissions') || '[]');
-            stored.push(submission);
-            localStorage.setItem('adminSubmissions', JSON.stringify(stored));
+            try {
+                const response = await fetch('/api/submissions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(submission)
+                });
 
-            alert('Show suggestion saved to the secure admin submissions page.');
-            showsForm.reset();
+                if (!response.ok) {
+                    throw new Error('Unable to save submission');
+                }
+
+                alert('Show suggestion saved to the secure admin submissions page.');
+                showsForm.reset();
+            } catch (error) {
+                alert('Unable to save your submission right now. Please try again later.');
+            }
         });
     </script>
 

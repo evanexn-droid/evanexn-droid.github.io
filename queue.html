@@ -45,7 +45,7 @@
         const stickerEmailInput = document.getElementById('sticker-email');
         const submissionStatus = document.getElementById('submission-status');
 
-        stickerForm.addEventListener('submit', (event) => {
+        stickerForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             const email = stickerEmailInput.value.trim();
 
@@ -58,16 +58,26 @@
             const submission = {
                 type: 'sticker',
                 email,
-                timestamp: new Date().toISOString()
             };
 
-            const stored = JSON.parse(localStorage.getItem('adminSubmissions') || '[]');
-            stored.push(submission);
-            localStorage.setItem('adminSubmissions', JSON.stringify(stored));
+            try {
+                const response = await fetch('/api/submissions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(submission)
+                });
 
-            stickerForm.reset();
-            submissionStatus.textContent = 'Thanks! Your sticker queue submission has been saved.';
-            submissionStatus.style.display = 'block';
+                if (!response.ok) {
+                    throw new Error('Unable to save submission');
+                }
+
+                stickerForm.reset();
+                submissionStatus.textContent = 'Thanks! Your sticker queue submission has been saved.';
+                submissionStatus.style.display = 'block';
+            } catch (error) {
+                submissionStatus.textContent = 'Unable to save your submission right now. Please try again later.';
+                submissionStatus.style.display = 'block';
+            }
         });
     </script>
 </body>

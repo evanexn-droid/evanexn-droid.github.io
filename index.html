@@ -186,16 +186,12 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         });
 
-        drawingForm.addEventListener('submit', (event) => {
+        drawingForm.addEventListener('submit', async (event) => {
             event.preventDefault();
-            // Export the canvas as a JPEG to produce a standard image file
-            // and avoid raw numeric data being stored.
             drawingDataInput.value = canvas.toDataURL('image/jpeg', 0.92);
 
             const merchSubmission = {
-                id: `merch-${Date.now()}`,
                 type: 'merch',
-                timestamp: new Date().toISOString(),
                 tool: toolSelect.value,
                 brushSize: brushSizeControl.value,
                 brushColor: brushColorControl.value,
@@ -203,13 +199,23 @@
                 message: document.getElementById('drawing-message').value.trim(),
             };
 
-            const stored = JSON.parse(localStorage.getItem('adminSubmissions') || '[]');
-            stored.push(merchSubmission);
-            localStorage.setItem('adminSubmissions', JSON.stringify(stored));
+            try {
+                const response = await fetch('/api/submissions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(merchSubmission)
+                });
 
-            alert('Merch design saved to the secure admin submissions page.');
-            drawingForm.reset();
-            setCanvasDefaults();
+                if (!response.ok) {
+                    throw new Error('Unable to save submission');
+                }
+
+                alert('Merch design saved to the secure admin submissions page.');
+                drawingForm.reset();
+                setCanvasDefaults();
+            } catch (error) {
+                alert('Unable to save your submission right now. Please try again later.');
+            }
         });
 
         setCanvasDefaults();

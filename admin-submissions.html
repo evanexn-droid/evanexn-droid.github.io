@@ -151,26 +151,52 @@
             });
         }
 
-        function loadSubmissions() {
-            return JSON.parse(localStorage.getItem('adminSubmissions') || '[]');
+        async function loadSubmissions() {
+            const params = new URLSearchParams(window.location.search);
+            const password = params.get('password') || passwordInput.value;
+            const response = await fetch(`/api/submissions?password=${encodeURIComponent(password)}`);
+            if (!response.ok) {
+                throw new Error('Unauthorized');
+            }
+            return response.json();
         }
 
-        loginButton.addEventListener('click', async () => {
+        async function login() {
             const entered = passwordInput.value;
-            const enteredHash = await hashText(entered);
-            if (enteredHash === LOGIN_HASH) {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: entered })
+            });
+
+            if (response.ok) {
                 loginPanel.classList.add('hidden');
                 submissionsPanel.classList.remove('hidden');
                 loginError.style.display = 'none';
-                renderSubmissions(loadSubmissions());
+                const items = await loadSubmissions();
+                renderSubmissions(items);
             } else {
                 loginError.style.display = 'block';
             }
+        }
+
+        loginButton.addEventListener('click', login);
+        passwordInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                login();
+            }
         });
 
-        clearButton.addEventListener('click', () => {
-            localStorage.removeItem('adminSubmissions');
-            renderSubmissions([]);
+        clearButton.addEventListener('click', async () => {
+            const password = passwordInput.value;
+            const response = await fetch(`/api/submissions?password=${encodeURIComponent(password)}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                renderSubmissions([]);
+            } else {
+                loginError.style.display = 'block';
+            }
         });
     </script>
 </body>
